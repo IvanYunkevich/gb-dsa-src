@@ -67,11 +67,11 @@ int task4(int a, int b)
     }
     if (a > 0 && b >= 1 && b % 2 == 0)
    {
-     var = a * task4(a * a, b / 2);
+     var = task4(a * a, b / 2);
    }
      if (a > 0 && b >= 1 && b % 2 == 1)
     {
-     var = a * task4(a, b - 1) * a;
+     var = a * task4(a, b - 1);
     }
         return var;
 }
