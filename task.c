@@ -50,22 +50,22 @@ task1()
 //////////TASK2//////////////////////////////////////////////////////////////////////////////////////////////////
 void TPK()
 {
-        double a[11] = {0};
+        double arr[11] = {0};
     printf("%s", "Vvedite 11 chisel:");
     printf("\n");
     for (int i = 0; i <= 11; i++)
     {
-        scanf("%lf", &a[i]);
+        scanf("%lf", &arr[i]);
     }
     for (int i = 10; i >= 0; i--)
         {
-          if (sqrt(fabs(a[i]))+5*pow(a[i],3)>400)
+          if (sqrt(fabs(arr[i]))+5*pow(arr[i],3)>400)
            {
             printf("%d TOO LARGE\n", i);
            }
         else
            {
-            printf("%d: %.2f\n",i+1,sqrt(fabs(a[i]))+5*pow(a[i],3));
+            printf("%d: %.2f\n",i+1,sqrt(fabs(arr[i]))+5*pow(arr[i],3));
            }
 
         }
