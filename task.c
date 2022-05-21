@@ -65,7 +65,7 @@ void TPK()
            }
         else
            {
-            printf("%d: %.2f\n",i+1,sqrt(fabs(arr[i]))+5*pow(arr[i],3));
+            printf("%d:%.2f\n",i+1,sqrt(fabs(arr[i]))+5*pow(arr[i],3));
            }
 
         }
