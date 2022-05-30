@@ -1,166 +1,204 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 10
-#define SZ 1000
-#define T int
 #define true 1==1
 #define false 1!=1
-
-typedef struct
-{
-    int pr;
-    int dat;
-} Node;
-Node* array[SIZE];
-int head;
-int tail;
-int items;
-
-void init()
-{
-    for(int i = 0; i < SIZE; ++i)
-    {
-        array[i] = NULL;
-    }
-        head = 0;
-        tail = 0;
-        items = 0;
-}
-void ins(int pr, int dat)
-{
-
-	Node* node = (Node*) malloc(sizeof(Node));
-	node->dat = dat;
-	node->pr = pr;
-
-    if (items < SZ)
-    {
-        array[items++] = node;
-    } else
-    {
-        printf("%s \n", "Queue is full");
-        return;
-    }
-}
-Node* rem()
-{
-    if (items == 0)
-    {
-        printf("%s\n", "Queue is empty");
-        return NULL;
-    }
-    int idx = head++ % SIZE;
-
-    for(int i = 0; i < SIZE; ++i)
-    {
-        if(array[i] == NULL)
-        {
-            continue;
-        }
-        if(array[i]-> pr > array[idx]-> pr)
-        {
-            idx = i;
-        }
-    }
-    Node *t = array[idx];
-    Node *temp;
-    array[idx] = NULL;
-    items--;
-
-    for(int j = idx; j >= 1; j--)
-    {
-      temp = array[j];
-      array[j] = array[j-1];
-      array[j-1] = temp;
-    }
-    return t;
-}
-void printQueue()
-{
-    printf("[ ");
-    for(int i = 0; i < SIZE; ++i)
-    {
-        if (array[i] == NULL)
-            printf("[*, *] ");
-        else
-            printf(" [%d, %d] ", array[i]->pr, array[i]->dat);
-    }
-    printf(" ]\n");
-}
-void task1()
-{
-    init();
-    ins(1, 11);
-    ins(3, 22);
-    ins(4, 33);
-    ins(2, 44);
-    ins(3, 55);
-    ins(4, 66);
-    ins(5, 77);
-    ins(1, 88);
-    ins(2, 99);
-    ins(6, 100);
-    printQueue();
-       for (int i = 0; i < 2; ++i) {
-        Node* n = rem();
-        printf("pr=%d, dat=%d \n", n->pr, n->dat);
-   }
-    printQueue();
-    return 0;
-}
-/////Task2//////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define T int
 typedef int boolean;
-int cursor = -1;
-T Stack[SZ];
+typedef struct Node {
+	int data;
+	struct Node *next;
+}Node;
+typedef struct {
+	Node *head;
+	int size;
 
-boolean push(T data) {
-	if (cursor < SZ)
-	{
-		Stack[++cursor] = data;
-		return true;
-	}
-	else
-	{
-		printf("%s", "Stack overflow");
-		return false;
-	}
-}
-
-T popST() {
-	if (cursor != -1)
-	{
-		return Stack[cursor--];
-	}
-	else {
-		printf("%s", "Empty stack");
-		return -1;
-	}
-}
-boolean decToBinST(int x, char *res)
+}List;
+void ins(List *list, int data)
 {
-    do
+    Node *new = (Node*) malloc(sizeof(Node));
+    new->data = data;
+    new->next = NULL;
+
+    Node *current = list->head;
+    if (current == NULL)
     {
-        push(x % 2);
-        x = x / 2;
-
-    }while (x >= 1);
-
-    while (cursor != -1) {
-        strcat(res, (popST()) ? "1" : "0");
+        list->head = new;
+        list->size++;
     }
-    strcat(res, "\0");
+    else
+    {
+        while (current->next != NULL)
+       {
+            current = current->next;
+        }
+        current->next = new;
+        list->size++;
+    }
+}
+boolean push(List *stack, T value)
+{
+    Node *tmp = (Node*) malloc(sizeof(Node));
+    if (tmp == NULL)
+    {
+        printf("Stack overflow \n");
+        return false;
+    }
+    tmp->data = value;
+    tmp->next = stack->head;
+    stack->head = tmp;
+    stack->size++;
     return true;
 }
 
-void task2()
+T pop(List *list) {
+    if (list->size == 0)
+    {
+        printf("Stack is empty \n");
+        return -1;
+    }
+    Node *tmp = list->head;
+    T var = list->head->data;
+    list->head = list->head->next;
+    free(tmp);
+    list->size--;
+    return var;
+}
+void initList(List *lst) {
+    lst->head = NULL;
+    lst->size = 0;
+}
+void printNode(Node *n)
 {
-    char bin[35];
-    boolean b = decToBinST(100, bin);
-    printf("%s\n", bin);
+    if (n == NULL) {
+        printf("[]");
+        return;
+    }
+    printf("[%c]", n->data);
+}
+void printList(List *list)
+{
+    Node *current = list->head;
+    if (current == NULL)
+     {
+        printNode(current);
+     } else {
+        do {
+            printNode(current);
+            current = current->next;
+        } while (current != NULL);
+    }
+    printf(" Size: %d \n", list->size);
+}
+///////Task1////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int brackets(char* sig)
+{
+    const int TYPES = 3;
+    char brackets[][2] = {{'(', ')'}, {'[', ']'}, {'{', '}'}};
+    List *sm = (List*) malloc(sizeof(List));
+    initList(sm);
+    int idx = 0;
+    while (*sig != '\0')
+    {
+        for (int i = 0; i < TYPES; ++i)
+          {
+             if (*sig == brackets[i][0])
+             {
+                push(sm, i);
+             }
+          }
+        for (int i = 0; i < TYPES; ++i)
+          {
+            if (*sig == brackets[i][1])
+             {
+                if (sm->size == 0)
+                 {
+                    return idx;
+                 }
+                if (i == sm->head->data)
+                  {
+                     pop(sm);
+                  }
+                else
+                  {
+                     return idx;
+                  }
+             }
+         }
+        sig++;
+        idx++;
+    }
+        if (sm->size != 0)
+        {
+            return sm->head->data;
+        }
+    return -1;
+}
+void task1()
+{
+    printf("%d \n", brackets("( ( [ )} [ [ { () ] ) )"));
+    printf("%d \n", brackets("[2/{5*(4+7)}]"));
+}
+/////////Task2////////////////////////////////////////////////////////////////////////////////////////////////////////
+void copyList(List* firstList, List* lastList)
+{
+ 	Node* current = firstList->head;
+ 	if (current == NULL)
+     {
+        return;
+     }
+
+    push(lastList, current->data);
+    Node* newNode = lastList->head;
+
+    while (current->next != NULL)
+        {
+        Node *temp1 = (Node*) malloc(sizeof(Node));
+        if (temp1 == NULL)
+          {
+             printf("Stack overflow \n");
+             return;
+          }
+        temp1->data = current->next->data;
+
+        newNode->next = temp1;
+    temp1->next = NULL;
+    current = current->next;
+    newNode = temp1;
+    lastList->size++;
+    }
+}
+
+//////Task3////////////////////////////////////////////////////////////////////////////////////////
+boolean sort(List* list)
+{
+    boolean var1 = true;
+    Node *current = list->head;
+    while (current->next != NULL)
+    {
+       if (current->data > current->next->data)
+       {
+         var1 = false;
+       }
+        current = current->next;
+    }
+    return var1;
 }
 int main()
 {
     task1();
-    //task2();
+    //Task2
+        List* firstList = (List*)malloc(sizeof(List));
+    initList(firstList);
+    List* lastList = (List*)malloc(sizeof(List));
+    initList(lastList);
+    for (int i = 5; i > 1; --i)
+    {
+        push(firstList, i);
+    }
+      copyList(firstList, lastList);
+      printList(firstList);
+      printList(lastList);
+      //task3
+    printf("%s \n", sort(firstList) ? "1" : "0");
     return 0;
 }
