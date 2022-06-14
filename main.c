@@ -2,203 +2,145 @@
 #include <stdlib.h>
 #define true 1==1
 #define false 1!=1
-#define T int
 typedef int boolean;
-typedef struct Node {
-	int data;
-	struct Node *next;
-}Node;
-typedef struct {
-	Node *head;
-	int size;
-
-}List;
-void ins(List *list, int data)
+typedef struct Node
 {
-    Node *new = (Node*) malloc(sizeof(Node));
-    new->data = data;
-    new->next = NULL;
+	int key;
+	struct Node* left;
+	struct Node* right;
+}TreeNode;
 
-    Node *current = list->head;
-    if (current == NULL)
+TreeNode* treeInsert(TreeNode* t, int data)
+{
+	TreeNode* newNode;
+	newNode = (TreeNode*) malloc(sizeof(TreeNode));
+	newNode->key = data;
+	newNode->left = NULL;
+	newNode->right = NULL;
+	TreeNode* current = t;
+	TreeNode* parent = t;
+	if (t == NULL)
+	{
+		t = newNode;
+	}
+	else
+	{
+      while(current->key != data)
+      {
+			parent = current;
+			if (current->key > data)
+			{
+				current = current->left;
+				if (current == NULL)
+				{
+					parent->left = newNode;
+				}
+			}
+			else
+			{
+				current = current->right;
+				if (current == NULL)
+				{
+					parent->right = newNode;
+				}
+			}
+      }
+	}
+	return t;
+}
+void printTree(TreeNode *root)
+{
+    if (root)
     {
-        list->head = new;
-        list->size++;
+        printf("%d", root->key);
+        if (root->left || root->right)
+        {
+            printf("(");
+            if (root->left)
+            {
+                printTree(root->left);
+            }
+            else
+            {
+                                printf("NULL");
+            }
+            printf(",");
+            if (root->right)
+            {
+                printTree(root->right);
+            }
+            else
+            {
+                printf("NULL");
+            }
+            printf(")");
+        }
+    }
+}
+///////task1///////////////////////////////////////////////////////////////////////////////////////
+int DepthOfTree(TreeNode *node)
+{
+    if (node == NULL)
+    {
+        return 0;
+    }
+    int DepthLeft = 0;
+    int DepthRight = 0;
+
+    if (node->left != NULL)
+    {
+        DepthLeft = DepthOfTree(node->left);
+    }
+    if (node->right != NULL)
+    {
+        DepthRight = DepthOfTree(node->right);
+    }
+    return 1 + ((DepthLeft > DepthRight) ? DepthLeft : DepthRight);
+}
+boolean checkBalance(TreeNode *root)
+{
+    return abs(DepthOfTree(root->left) - DepthOfTree(root->right)) <= 1;
+}
+//////task 1.1///////////////////////////////////////////////////////////////////////////
+void Trees(const int SIZE, TreeNode *root)
+{
+    for (int i = 0; i < SIZE; ++i)
+    {
+        treeInsert(root, rand() % 1000);
+    }
+}
+////task2//////////////////////////////////////////////////////////////////////////
+TreeNode* binSearch(TreeNode *root, int dat)
+{
+    if (root == NULL || root->key == dat)
+    {
+        return root;
+    }
+    if (dat < root->key)
+    {
+        return binSearch(root->left, dat);
     }
     else
     {
-        while (current->next != NULL)
-       {
-            current = current->next;
-        }
-        current->next = new;
-        list->size++;
+        return binSearch(root->right, dat);
     }
 }
-boolean push(List *stack, T value)
+int les12()
 {
-    Node *tmp = (Node*) malloc(sizeof(Node));
-    if (tmp == NULL)
+    const int TREES = 50;
+    const int SIZE = 10000;
+    int balance = 0;
+    for (int i = 0; i < TREES; ++i)
     {
-        printf("Stack overflow \n");
-        return false;
+       TreeNode *node = NULL;
+       TreeNode *root = treeInsert(node, rand() % 1000);
+       Trees(SIZE, root);
+       balance += checkBalance(root) ? 1 : 0;
     }
-    tmp->data = value;
-    tmp->next = stack->head;
-    stack->head = tmp;
-    stack->size++;
-    return true;
-}
-
-T pop(List *list) {
-    if (list->size == 0)
-    {
-        printf("Stack is empty \n");
-        return -1;
-    }
-    Node *tmp = list->head;
-    T var = list->head->data;
-    list->head = list->head->next;
-    free(tmp);
-    list->size--;
-    return var;
-}
-void initList(List *lst) {
-    lst->head = NULL;
-    lst->size = 0;
-}
-void printNode(Node *n)
-{
-    if (n == NULL) {
-        printf("[]");
-        return;
-    }
-    printf("[%c]", n->data);
-}
-void printList(List *list)
-{
-    Node *current = list->head;
-    if (current == NULL)
-     {
-        printNode(current);
-     } else {
-        do {
-            printNode(current);
-            current = current->next;
-        } while (current != NULL);
-    }
-    printf(" Size: %d \n", list->size);
-}
-///////Task1////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int brackets(char* sig)
-{
-    const int TYPES = 3;
-    char brackets[][2] = {{'(', ')'}, {'[', ']'}, {'{', '}'}};
-    List *sm = (List*) malloc(sizeof(List));
-    initList(sm);
-    int idx = 0;
-    while (*sig != '\0')
-    {
-        for (int i = 0; i < TYPES; ++i)
-          {
-             if (*sig == brackets[i][0])
-             {
-                push(sm, i);
-             }
-          }
-        for (int i = 0; i < TYPES; ++i)
-          {
-            if (*sig == brackets[i][1])
-             {
-                if (sm->size == 0)
-                 {
-                    return idx;
-                 }
-                if (i == sm->head->data)
-                  {
-                     pop(sm);
-                  }
-                else
-                  {
-                     return idx;
-                  }
-             }
-         }
-        sig++;
-        idx++;
-    }
-        if (sm->size != 0)
-        {
-            return sm->head->data;
-        }
-    return -1;
-}
-void task1()
-{
-    printf("%d \n", brackets("( ( [ )} [ [ { () ] ) )"));
-    printf("%d \n", brackets("[2/{5*(4+7)}]"));
-}
-/////////Task2////////////////////////////////////////////////////////////////////////////////////////////////////////
-void copyList(List* firstList, List* lastList)
-{
- 	Node* current = firstList->head;
- 	if (current == NULL)
-     {
-        return;
-     }
-
-    push(lastList, current->data);
-    Node* newNode = lastList->head;
-
-    while (current->next != NULL)
-        {
-        Node *temp1 = (Node*) malloc(sizeof(Node));
-        if (temp1 == NULL)
-          {
-             printf("Stack overflow \n");
-             return;
-          }
-        temp1->data = current->next->data;
-
-        newNode->next = temp1;
-    temp1->next = NULL;
-    current = current->next;
-    newNode = temp1;
-    lastList->size++;
-    }
-}
-
-//////Task3////////////////////////////////////////////////////////////////////////////////////////
-boolean sort(List* list)
-{
-    boolean var1 = true;
-    Node *current = list->head;
-    while (current->next != NULL)
-    {
-       if (current->data > current->next->data)
-       {
-         var1 = false;
-       }
-        current = current->next;
-    }
-    return var1;
+   printf("%d%% \n", balance * 100 / TREES);
 }
 int main()
 {
-    task1();
-    //Task2
-        List* firstList = (List*)malloc(sizeof(List));
-    initList(firstList);
-    List* lastList = (List*)malloc(sizeof(List));
-    initList(lastList);
-    for (int i = 5; i > 1; --i)
-    {
-        push(firstList, i);
-    }
-      copyList(firstList, lastList);
-      printList(firstList);
-      printList(lastList);
-      //task3
-    printf("%s \n", sort(firstList) ? "1" : "0");
+    les12();
     return 0;
 }
