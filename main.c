@@ -1,146 +1,144 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define n 6
 #define true 1==1
 #define false 1!=1
+#define T char
 typedef int boolean;
-typedef struct Node
-{
-	int key;
-	struct Node* left;
-	struct Node* right;
-}TreeNode;
 
-TreeNode* treeInsert(TreeNode* t, int data)
+int matrix[n][n] = {
+    {0,1,1,0,0,0},
+    {0,0,0,1,1,1},
+    {0,0,0,0,0,1},
+    {1,0,0,0,0,0},
+    {0,0,0,0,0,0},
+    {0,0,0,0,1,0},
+};
+int visited[n] = {0};
+
+typedef struct OneLinkNode
 {
-	TreeNode* newNode;
-	newNode = (TreeNode*) malloc(sizeof(TreeNode));
-	newNode->key = data;
-	newNode->left = NULL;
-	newNode->right = NULL;
-	TreeNode* current = t;
-	TreeNode* parent = t;
-	if (t == NULL)
-	{
-		t = newNode;
-	}
-	else
-	{
-      while(current->key != data)
-      {
-			parent = current;
-			if (current->key > data)
-			{
-				current = current->left;
-				if (current == NULL)
-				{
-					parent->left = newNode;
-				}
-			}
-			else
-			{
-				current = current->right;
-				if (current == NULL)
-				{
-					parent->right = newNode;
-				}
-			}
-      }
-	}
-	return t;
+    int dat;
+    struct OneLinkNode *next;
+} OneLinkNode;
+
+typedef struct
+{
+    OneLinkNode *head;
+    int size;
+} OneLinkList;
+
+void initOneLinkList(OneLinkList *lst)
+{
+    lst->head = NULL;
+    lst->size = 0;
 }
-void printTree(TreeNode *root)
+
+boolean pushOneLinkStack(OneLinkList *stack, T value)
 {
-    if (root)
+    OneLinkNode *tmp = (OneLinkNode*) malloc(sizeof(OneLinkNode));
+    if (tmp == NULL) {
+        printf("Stack overflow \n");
+        return false;
+    }
+    tmp->dat = value;
+    tmp->next = stack->head;
+
+    stack->head = tmp;
+    stack->size++;
+    return true;
+}
+int get2dInt(int** array, const int row, const int col)
+{
+    return *((*(array + row)) + col);
+}
+
+T popOneLinkStack(OneLinkList *stack)
+{
+    if (stack->size == 0)
     {
-        printf("%d", root->key);
-        if (root->left || root->right)
-        {
-            printf("(");
-            if (root->left)
-            {
-                printTree(root->left);
-            }
-            else
-            {
-                                printf("NULL");
-            }
-            printf(",");
-            if (root->right)
-            {
-                printTree(root->right);
-            }
-            else
-            {
-                printf("NULL");
-            }
-            printf(")");
+        printf("Stack is empty \n");
+        return -1;
+    }
+    OneLinkNode *tmp = stack->head;
+    T data = stack->head->dat;
+    stack->head = stack->head->next;
+    free(tmp);
+    stack->size--;
+    return data;
+}
+///////1/////////////////////
+int getUnvisitedVertex (int** matrix, int ver, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (get2dInt(matrix, ver, i) == 1 && !visited[i])
+            return i;
+    }
+    return -1;
+}
+void resetArr()
+{
+    for (int i = 0; i < n; ++i)
+    {
+        visited[i] = 0;
+    }
+}
+void depthTravers(int st)
+{
+    int r;
+    printf("%d", st);
+    visited[st] = 1;
+    for (r = 0; r < n; ++r) {
+        if (matrix[st][r] == 1 && !visited[r]) {
+            depthTravers(r);
         }
     }
 }
-///////task1///////////////////////////////////////////////////////////////////////////////////////
-int DepthOfTree(TreeNode *node)
+void depthTraversStack(int** matrix, int size)
 {
-    if (node == NULL)
-    {
-        return 0;
-    }
-    int DepthLeft = 0;
-    int DepthRight = 0;
+    OneLinkList* stack = (OneLinkList*) malloc(sizeof(OneLinkList));
+    initOneLinkList(stack);
 
-    if (node->left != NULL)
+    visited[0] = true;
+    printf("%c ", 0 + 65);
+    pushOneLinkStack(stack, 0);
+
+    while (stack->size)
     {
-        DepthLeft = DepthOfTree(node->left);
+        int v = getUnvisitedVertex(matrix, stack->head->dat, size);
+        if (v == -1)
+        {
+            popOneLinkStack(stack);
+        } else
+        {
+            visited[v] = true;
+            printf("%c ", v + 65);
+            pushOneLinkStack(stack, v);
+        }
     }
-    if (node->right != NULL)
-    {
-        DepthRight = DepthOfTree(node->right);
-    }
-    return 1 + ((DepthLeft > DepthRight) ? DepthLeft : DepthRight);
+    resetArr;
 }
-boolean checkBalance(TreeNode *root)
+////////////////////////////////////////////////////////////////
+int adjLinks[n] = {0};
+
+void adjacencyMatrixCount (int** matrix, const int size)
 {
-    return abs(DepthOfTree(root->left) - DepthOfTree(root->right)) <= 1;
-}
-//////task 1.1///////////////////////////////////////////////////////////////////////////
-void Trees(const int SIZE, TreeNode *root)
-{
-    for (int i = 0; i < SIZE; ++i)
-    {
-        treeInsert(root, rand() % 1000);
+    for (int i = 0; i < size; ++i)
+        {
+        for (int j = 0; j < size; ++j)
+        {
+            if (matrix[j][i] == 1 && i != j)
+                adjLinks[i]++;
+        }
     }
 }
-////task2//////////////////////////////////////////////////////////////////////////
-TreeNode* binSearch(TreeNode *root, int dat)
-{
-    if (root == NULL || root->key == dat)
-    {
-        return root;
-    }
-    if (dat < root->key)
-    {
-        return binSearch(root->left, dat);
-    }
-    else
-    {
-        return binSearch(root->right, dat);
-    }
-}
-int les12()
-{
-    const int TREES = 50;
-    const int SIZE = 10000;
-    int balance = 0;
-    for (int i = 0; i < TREES; ++i)
-    {
-       TreeNode *node = NULL;
-       TreeNode *root = treeInsert(node, rand() % 1000);
-       Trees(SIZE, root);
-       balance += checkBalance(root) ? 1 : 0;
-    }
-   printf("%d%% \n", balance * 100 / TREES);
-}
+
+
+
+
 int main()
 {
-    les12();
+    depthTravers(0);
     return 0;
 }
