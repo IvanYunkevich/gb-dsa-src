@@ -1,41 +1,45 @@
+//16//
 #include <stdio.h>
 #include <stdlib.h>
-#define SUM 98
-//////Task1////////////////////////////////////////////////
-int hash(char* Str)
+////////task1///////////////////////////////////////////
+void cesarCrypt(char *str, int key)
 {
-    int codesSum = 0;
-    while (*Str != '\0')
+    int i = 0;
+    while(str[i] != '\0')
     {
-        codesSum += *Str;
-        Str++;
+        str[i] += key;
+        i++;
     }
-    return codesSum;
 }
-
-///////////task2////////////////////////////////////////////
-
-int coins(int* coin, int sum, const int SIZE)
+void cesarDecrypt(char *str, int key)
 {
-    int var = 0;
-    for (int i = 0; i < SIZE; i++)
+    int i = 0;
+    while(str[i] != '\0')
     {
-        while (coin[i] <= sum)
-        {
-            sum -= coin[i];
-            var++;
-            printf("%4d", coin[i]);
-        }
-        if (sum == 0)
-        {
-            continue;
-        }
+        str[i] -= key;
+        i++;
     }
-    return var;
 }
+void printString(char* str, int size)
+{
+	for (int i = 0; i < size; i++)
+		printf("%c", str[i]);
+}
+void task1()
+{
+    char str[20] = "Ananas";
+    printString(str, 6);
+    printf(" \n");
+    cesarCrypt(str, 4);
+    printString(str, 6);
+    printf(" \n");
+    cesarDecrypt(str, 4);
+    printString(str, 6);
+}
+//второе задание не успел за день сделать, поэтому буду разбирать самостоятельно за время буткемпа.
 int main()
 {
-    int coin[] = {50, 10, 5, 2, 1};
-    printf(coins(coin, SUM, 5));
+    task1();
+
     return 0;
 }
