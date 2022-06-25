@@ -36,7 +36,7 @@ void task1()
     cesarDecrypt(str, 4);
     printString(str, 6);
 }
-//vtoroe zadanie ya ne uspel sdelat' za etot den', poetomu budu razbirat' ego samostoyatel'no za vremya butkempa.
+//dobriy den', vtoroe zadanie ya ne uspel sdelat' za etot den', poetomu budu razbirat' ego samostoyatel'no za vremya butkempa.
 int main()
 {
     task1();
